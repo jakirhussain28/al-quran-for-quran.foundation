@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import logoquran from '/src/assets/logo-quran.svg';
 import VerseList from './Components/VerseList';
 import Header from './Components/Header';
+import { fetchWithCache, DB_STORES } from './utils/db';
 
-// load these only when needed to save speed
 const SettingsModal = lazy(() => import('./Components/SettingsModal'));
 const SurahInfoModal = lazy(() => import('./Components/SurahInfoModal')); 
 
@@ -57,7 +57,6 @@ function App() {
   const [selectedChapter, setSelectedChapter] = useState(getInitialChapter);
   const [page, setPage] = useState(getInitialPage);
   const [startPage, setStartPage] = useState(getInitialPage); 
-  
   const [verses, setVerses] = useState([]);
   const [totalPages, setTotalPages] = useState(1);
   const [targetVerse, setTargetVerse] = useState(getInitialTarget);
@@ -122,22 +121,28 @@ function App() {
   // fetch list of all chapters once
   useEffect(() => {
     setLoadingChapters(true);
-    fetch(`${API_URL}/api/chapters`)
-      .then(res => res.json())
+    
+    const fetcher = () => fetch(`${API_URL}/api/chapters`).then(res => res.json());
+
+    fetchWithCache(DB_STORES.CHAPTERS, 'all_chapters', fetcher)
       .then(data => {
-        setChapters(data.chapters || []);
+        // data could be directly the array (if from DB) or { chapters: [] } (if from API)
+        // Adjust based on your API response structure. 
+        // Based on server.py: API returns { chapters: [...] }
+        const chapterList = data.chapters || data; 
+        setChapters(chapterList || []);
         setLoadingChapters(false);
       })
       .catch(err => {
+        console.error(err);
         setLoadingChapters(false);
       });
   }, []);
 
-  // fetch verses when chapter or page changes
+  // 2. FETCH VERSES (OPTIMIZED WITH DB)
   useEffect(() => {
     if (!selectedChapter) return;
     const controller = new AbortController();
-    const signal = controller.signal;
     
     // reset scroll if starting fresh
     if (page === 1 && verses.length === 0 && contentTopRef.current && !targetVerse) {
@@ -146,10 +151,20 @@ function App() {
     
     setLoadingVerses(true);
 
-    fetch(`${API_URL}/api/chapters/${selectedChapter.id}/verses?page=${page}`, { signal })
-      .then(res => res.json())
+    // Create unique key for DB: e.g., "verse_1_page_1"
+    const cacheKey = `verse_${selectedChapter.id}_page_${page}`;
+    
+    const fetcher = async () => {
+        const res = await fetch(`${API_URL}/api/chapters/${selectedChapter.id}/verses?page=${page}`, { 
+            signal: controller.signal 
+        });
+        return res.json();
+    };
+
+    fetchWithCache(DB_STORES.VERSES, cacheKey, fetcher)
       .then(data => {
-        if (signal.aborted) return;
+        if (controller.signal.aborted) return;
+        
         const fetchedVerses = data.verses || [];
         const meta = data.pagination || {};
         setTotalPages(meta.total_pages || 1);
@@ -187,7 +202,6 @@ function App() {
   }, [selectedChapter, page]);
 
   // ACTIONS 
-
   const handleChapterSelect = (chapter) => {
     let chapterObj = chapter;
     if (typeof chapter === 'number') chapterObj = chapters.find(c => c.id === chapter);
@@ -247,10 +261,15 @@ function App() {
     // fetch older verses (scrolling up)
     const prevPage = startPage - 1;
     setLoadingTop(true);
-    const controller = new AbortController();
+    
+    // using cache for "load previous"
+    const cacheKey = `verse_${selectedChapter.id}_page_${prevPage}`;
+    const fetcher = async () => {
+        const res = await fetch(`${API_URL}/api/chapters/${selectedChapter.id}/verses?page=${prevPage}`);
+        return res.json();
+    };
 
-    fetch(`${API_URL}/api/chapters/${selectedChapter.id}/verses?page=${prevPage}`, { signal: controller.signal })
-      .then(res => res.json())
+    fetchWithCache(DB_STORES.VERSES, cacheKey, fetcher)
       .then(data => {
          const newVerses = data.verses || [];
          if (newVerses.length > 0) {
@@ -301,8 +320,6 @@ function App() {
 
   return (
     <div className={`flex h-screen font-sans overflow-hidden transition-colors duration-300 ${mainBgClass}`}>
-
-      {/* HEADER */}
       <Header 
         theme={theme}
         audioStatus={audioStatus}
