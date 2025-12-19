@@ -44,9 +44,9 @@ const Header = ({
             <button 
               onClick={handleLogoClick}
               aria-label="View Surah Information"
-              className="hover:scale-105 active:scale-95 transition-transform cursor-pointer focus:outline-none"
+              className="hover:scale-105 active:scale-95 transition-transform cursor-pointer focus:outline-none flex items-center translate-x-0.5"
             >
-              <img src={logoquran} alt="Al-Qur'an Logo" className="w-9 h-9" />
+              <img src={logoquran} alt="Al-Qur'an Logo" className="w-11 h-11 block" />
             </button>
           )}
         </div>
@@ -56,10 +56,10 @@ const Header = ({
           <button 
             onClick={handleLogoClick}
             aria-label="View Surah Information"
-            className="hover:scale-105 active:scale-95 transition-transform cursor-pointer focus:outline-none"
+            className="hover:scale-105 active:scale-95 transition-transform cursor-pointer focus:outline-none flex items-center translate-x-0.5"
             title="View Surah Info"
           >
-            <img src={logoquran} alt="Al-Qur'an Logo" className="w-9 h-9" />
+            <img src={logoquran} alt="Al-Qur'an Logo" className="w-11 h-11 block" />
           </button>
         </div>
         

@@ -1,0 +1,1 @@
+> This public repository is **not connected** to the live deployment at https://alquran-furqan.vercel.app/.

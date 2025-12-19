@@ -61,20 +61,20 @@ async def api_root():
 # GET CHAPTERS
 @app.get("/api/chapters")
 async def get_chapters(response: Response):
-    # cache 180days
-    response.headers["Cache-Control"] = "public, max-age=15724800, immutable"
+    # cache 365days
+    response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return await make_request("/chapters")
 
 # GET INFO
 @app.get("/api/chapters/{chapter_id}/info")
 async def get_chapter_info(chapter_id: int, response: Response):
-    response.headers["Cache-Control"] = "public, max-age=15724800, immutable"
+    response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     return await make_request(f"/chapters/{chapter_id}/info", {"language": "en"})
 
 # GET VERSES
 @app.get("/api/chapters/{chapter_id}/verses")
 async def get_verses(chapter_id: int, response: Response, page: int = 1):
-    response.headers["Cache-Control"] = "public, max-age=15724800, immutable"
+    response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
     
     # check processed cache
     processed_cache_key = f"processed_verses::{chapter_id}::{page}"
