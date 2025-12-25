@@ -231,8 +231,8 @@ function VerseList({
   const handlePlayPause = (verse) => {
     const verseKey = verse.verse_key;
     
-    // toggle if same verse
-    if (playingVerseKey === verseKey) {
+    //check ref to avoid stale closure
+    if (currentAudioKeyRef.current === verseKey) {
       if (audioRef.current) {
         if (audioRef.current.paused) {
           audioRef.current.play();
@@ -262,7 +262,7 @@ function VerseList({
 
     const newAudio = new Audio(audioUrl);
     audioRef.current = newAudio;
-    currentAudioKeyRef.current = verseKey;
+    currentAudioKeyRef.current = verseKey; // update ref immediately
 
     newAudio.play()
         .then(() => {
