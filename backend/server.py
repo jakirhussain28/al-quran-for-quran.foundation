@@ -100,6 +100,14 @@ async def get_verses(chapter_id: int, response: Response, page: int = 1):
 
     if "verses" in clean_data:
         for verse in clean_data["verses"]:
+            
+            if "text_uthmani" in verse:
+                # replace standard sukun (0652) with quranic sukun (06e1)
+                verse["text_uthmani"] = verse["text_uthmani"].replace("\u0652", "\u06e1")
+                
+                # then replace small high rounded zero (06df) with standard sukun (0652)
+                verse["text_uthmani"] = verse["text_uthmani"].replace("\u06df", "\u0652")
+
             if "translations" in verse:
                 for translation in verse["translations"]:
                     original_text = translation["text"]

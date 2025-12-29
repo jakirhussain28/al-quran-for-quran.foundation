@@ -14,7 +14,7 @@ const arabicSizeMap = {
   2: 'text-2xl leading-[2.2]',
   3: 'text-3xl leading-[2.5]',
   4: 'text-4xl leading-[2.8]',
-  5: 'text-5xl leading-[3.0]',
+  5: 'text-5xl leading-[3.0]'
 };
 
 const translationSizeMap = {
@@ -26,11 +26,11 @@ const translationSizeMap = {
 };
 
 const markerStyleMap = {
-  1: 'h-5 min-w-4 text-sm border-1',    
-  2: 'h-6 min-w-6 text-base border-1', 
-  3: 'h-8 min-w-8 text-lg border-1',   
-  4: 'h-9 min-w-10 text-xl border-1', 
-  5: 'h-10 min-w-12 text-2xl border-1' 
+  1: 'text-xl leading-[2.0]',
+  2: 'text-2xl leading-[2.2]',
+  3: 'text-3xl leading-[2.5]',
+  4: 'text-4xl leading-[2.8]',
+  5: 'text-5xl leading-[3.0]'
 };
 
 const VerseCard = forwardRef(({ 
@@ -140,7 +140,7 @@ const VerseCard = forwardRef(({
             <span 
               className={`
                 inline-flex items-center justify-center 
-                px-1 mr-2 rounded-lg border-current
+                mr-2
                 font-bold leading-none
                 align-middle select-none whitespace-nowrap
                 ${ayahMarkerColor}

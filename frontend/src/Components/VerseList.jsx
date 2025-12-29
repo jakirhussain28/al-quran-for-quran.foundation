@@ -361,7 +361,7 @@ function VerseList({
         {shouldShowBismillah() && (
           <div className="flex flex-col items-center justify-center py-8 pb-12 select-none">
             <div className={`font-arabic text-2xl md:text-4xl leading-relaxed opacity-90 transition-colors duration-300 ${isLight ? 'text-stone-700' : 'text-gray-300'}`}>
-              بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ
+بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِيمِ            
             </div>
           </div>
         )}
